@@ -1,4 +1,4 @@
-# adventOfCodeHaskell
+# Haskell-Advent-of-Code
 
 This is a repo for solutions for the advent of code written in haskell.
 
