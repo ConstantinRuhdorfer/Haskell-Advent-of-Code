@@ -1,6 +1,7 @@
 module Main where
 
-import Day2
+import qualified Day1
+import qualified Day2
 
 import System.IO
 import System.Environment
@@ -10,22 +11,18 @@ main = do
     args <- getArgs
     case args of
         [] ->    print "Please give atleast one command line argument like: ... input/bla.txt"
-        [arg] -> handleFilePath arg 
+        [arg] -> handleArg arg 
         _ ->     error "too many arguments just 1 supported."
 
 {-|
-  The 'handleFilePath' function gets a file path and does something with it.
+  The 'handleArg' function gets a arg and does something with it.
 -}
-handleFilePath :: String -> IO ()
-handleFilePath path = do
-    let list = []
-    handle <- openFile path ReadMode
-    contents <- hGetContents handle
-    let singlewords = words contents
-        list = singlewords
-
-    let res = solver list 19690720 99 99
-
-    print res
-
-    hClose handle
+handleArg :: String -> IO ()
+handleArg arg = do
+    case arg of
+        "day1" -> Day1.solveDay1
+        "day2" -> Day2.solveDay2
+        "all"  -> do
+            Day1.solveDay1
+            Day2.solveDay2
+        _      -> print "Not supported try day1, day2 or all"

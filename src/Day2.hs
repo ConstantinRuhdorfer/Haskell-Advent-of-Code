@@ -1,8 +1,33 @@
 module Day2
-    ( solver
+    ( solveDay2
     ) where
 
+import System.IO
+import System.Environment
+
 -- desired was 19690720
+solveDay2 :: IO ()
+solveDay2 = do
+    let path = "input/day2.txt"
+    let list = []
+    handle <- openFile path ReadMode
+    contents <- hGetContents handle
+    let singlewords = words contents
+        list = singlewords
+
+    let res = solve list 12 2
+    let resSolver = solver list 19690720 99 99
+
+    print ("Executing programm in " ++ path ++ " with 12 and 2")
+    print res
+
+    print ("Searching for a noun and a verb that together with the program in " 
+        ++ path 
+        ++ " will result in 19690720")
+    print resSolver
+
+    hClose handle
+
 
 solve :: [String] -> Int -> Int -> Int
 solve inputProgram noun verb

@@ -1,4 +1,4 @@
 #!/bin/sh
 
 stack build
-stack exec adventOfCodeHaskell input/day2.txt
+stack exec adventOfCodeHaskell day2
