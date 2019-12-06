@@ -25,7 +25,7 @@ or (but really the same):
 
 ```sh
 stack build
-stack exec adventOfCodeHaskell [all|day[1...X]]
+stack exec adventOfCodeHaskell [all|day[1|...|X]]
 ```
 
 ## Project structure
@@ -41,7 +41,7 @@ The relevant folders are:
 |   +-- testX.txt         Some test file for developement testing for day X.
 |   +-- ...
 +-- src/                  Problem solutions
-|   +-- DayX.hs           Complete solution for porblem day X.
+|   +-- DayX.hs           Complete solution for problem day X.
 |   +-- ...
 ```
 
