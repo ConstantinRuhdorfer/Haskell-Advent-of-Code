@@ -36,7 +36,7 @@ solve inputProgram noun verb
 solver :: [String] -> Int -> Int -> Int -> [Int] 
 solver inputProgram desired noun verb
     | result /= desired && verb /= 0 = solver inputProgram desired noun (verb-1)
-    | result /= desired && verb == 0 && noun /= 0 = solver inputProgram desired (noun-1) 99
+    | result < desired || (result /= desired && verb == 0 && noun /= 0) = solver inputProgram desired (noun-1) 99
     | otherwise = [noun, verb]
   where
     result = solve inputProgram noun verb
