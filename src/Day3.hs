@@ -8,14 +8,10 @@ import           System.Environment
 import           Data.List.Split
 import           Data.List
 import qualified Data.Set                      as Set
+import qualified Data.Map.Lazy                 as Map
 
 import qualified Data.Text                     as Text
 import qualified Data.Text.IO                  as Text
-
-type Coordinate = (Int, Int)
-type GraphCoordinates = Set.Set Coordinate
-type Action = (Int, Int) -> (Int, Int)
-type CommandList = [String]
 
 solveDay3 :: IO ()
 solveDay3 = do
@@ -25,9 +21,25 @@ solveDay3 = do
     let graphA = execute (splitOn "," (Text.unpack (lines !! 0)))
     let graphB = execute (splitOn "," (Text.unpack (lines !! 1)))
 
-    let final  = distance graphA graphB
+    let final  = distance (coordinates graphA) (coordinates graphB)
     print final
 
+{-| 
+    Solutions
+-}
+type Coordinate = (Int, Int)
+type GraphCoordinates = Set.Set Coordinate
+type Action = (Int, Int) -> (Int, Int)
+type CommandList = [String]
+type DistancesToStart = Map.Map (Coordinate -> Int)
+
+data GraphState = GraphState
+    { coordinates :: GraphCoordinates
+    , endPoint :: Coordinate
+    }
+
+mkGraphState :: GraphCoordinates -> Coordinate -> GraphState
+mkGraphState coordinates endPoint = GraphState coordinates endPoint
 
 distance :: GraphCoordinates -> GraphCoordinates -> Maybe Int
 distance graphA graphB = Set.lookupMin allDistancees
@@ -35,57 +47,37 @@ distance graphA graphB = Set.lookupMin allDistancees
     allDistancees = Set.map (\(x, y) -> (abs x) + (abs y)) crossPoints
     crossPoints   = graphA `Set.intersection` graphB
 
-execute :: CommandList -> GraphCoordinates
-execute commands = execute' commands (0, 0) Set.empty
+execute :: CommandList -> GraphState
+execute commands = execute' commands (mkGraphState Set.empty (0, 0))
 
-execute' :: CommandList -> Coordinate -> GraphCoordinates -> GraphCoordinates
-execute' []       currentPoint result = result
-execute' commands currentPoint result = execute' (tail commands) newPoint graph
+execute' :: CommandList -> GraphState -> GraphState
+execute' []       state = state
+execute' commands state = execute' (tail commands) newState
+    where newState = executeCommand (head commands) state
+
+executeCommand :: String -> GraphState -> GraphState
+executeCommand (direction : amount) state = case direction of
+    'U' -> expandUp (read amount) state
+    'R' -> expandRight (read amount) state
+    'D' -> expandDown (read amount) state
+    'L' -> expandLeft (read amount) state
+
+expandRight :: Int -> GraphState -> GraphState
+expandRight command state = expand command state (\(x, y) -> (x + 1, y))
+
+expandLeft :: Int -> GraphState -> GraphState
+expandLeft command state = expand command state (\(x, y) -> (x - 1, y))
+
+expandUp :: Int -> GraphState -> GraphState
+expandUp command state = expand command state (\(x, y) -> (x, y + 1))
+
+expandDown :: Int -> GraphState -> GraphState
+expandDown command state = expand command state (\(x, y) -> (x, y - 1))
+
+expand :: Int -> GraphState -> Action -> GraphState
+expand command (GraphState coordinates endPoint) action
+    | command == 0 = mkGraphState coordinates newPoint
+    | otherwise    = expand (command - 1) newState action
   where
-    (newPoint, graph) = executeCommand (head commands) currentPoint result
-
-executeCommand
-    :: String
-    -> Coordinate
-    -> GraphCoordinates
-    -> (Coordinate, GraphCoordinates)
-executeCommand (direction : amount) currentPoint currentList =
-    case direction of
-        'U' -> expandUp (read amount) currentPoint currentList
-        'R' -> expandRight (read amount) currentPoint currentList
-        'D' -> expandDown (read amount) currentPoint currentList
-        'L' -> expandLeft (read amount) currentPoint currentList
-
-expandRight
-    :: Int -> Coordinate -> GraphCoordinates -> (Coordinate, GraphCoordinates)
-expandRight command currentPoint currentList =
-    expand command currentPoint currentList (\(x, y) -> (x + 1, y))
-
-expandLeft
-    :: Int -> Coordinate -> GraphCoordinates -> (Coordinate, GraphCoordinates)
-expandLeft command currentPoint currentList =
-    expand command currentPoint currentList (\(x, y) -> (x - 1, y))
-
-expandUp
-    :: Int -> Coordinate -> GraphCoordinates -> (Coordinate, GraphCoordinates)
-expandUp command currentPoint currentList =
-    expand command currentPoint currentList (\(x, y) -> (x, y + 1))
-
-expandDown
-    :: Int -> Coordinate -> GraphCoordinates -> (Coordinate, GraphCoordinates)
-expandDown command currentPoint currentList =
-    expand command currentPoint currentList (\(x, y) -> (x, y - 1))
-
-expand
-    :: Int
-    -> Coordinate
-    -> GraphCoordinates
-    -> Action
-    -> (Coordinate, GraphCoordinates)
-expand command (x, y) currentGraph action
-    | command == 0 = (newPoint, currentGraph)
-    | otherwise = expand (command - 1)
-                         newPoint
-                         (Set.insert newPoint currentGraph)
-                         action
-    where newPoint = action (x, y)
+    newPoint = action endPoint
+    newState = mkGraphState (Set.insert newPoint coordinates) newPoint
