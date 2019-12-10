@@ -3,9 +3,7 @@ module Day4
     )
 where
 
--- 750
 import qualified Data.List                     as List
-import           Debug.Trace
 
 data SearchState = SearchState
     { lowerBound :: Int
