@@ -2,6 +2,7 @@ module Main where
 
 import qualified Day1
 import qualified Day2
+import qualified Day3
 
 import System.IO
 import System.Environment
@@ -10,7 +11,7 @@ main :: IO ()
 main = do
     args <- getArgs
     case args of
-        [] ->    print "Please give atleast one command line argument like: ... input/bla.txt"
+        [] ->    print "Please give atleast one command line argument like: [all|day[1|...|X]]"
         [arg] -> handleArg arg 
         _ ->     error "too many arguments just 1 supported."
 
@@ -22,7 +23,9 @@ handleArg arg = do
     case arg of
         "day1" -> Day1.solveDay1
         "day2" -> Day2.solveDay2
+        "day3" -> Day3.solveDay3
         "all"  -> do
             Day1.solveDay1
             Day2.solveDay2
-        _      -> print "Not supported try day1, day2 or all"
+            Day3.solveDay3
+        _      -> print "Not supported try [all|day[1|...|X]]"

@@ -26,13 +26,16 @@ source-repository head
   location: https://github.com/https://github.com/ConstantinRuhdorfer
 
 library
-  exposed-modules: Day1 Day2
+  exposed-modules: Day1 Day2 Day3
   other-modules:
       Paths_adventOfCodeHaskell
   hs-source-dirs:
       src
   build-depends:
-      base >=4.7 && <5
+      containers
+      , split
+      , text
+      , base >=4.7 && <5
   default-language: Haskell2010
 
 executable adventOfCodeHaskell

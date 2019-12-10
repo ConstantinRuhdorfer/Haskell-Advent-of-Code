@@ -1,4 +1,4 @@
 #!/bin/sh
 
 stack build
-stack exec adventOfCodeHaskell day2
+stack exec adventOfCodeHaskell day3
