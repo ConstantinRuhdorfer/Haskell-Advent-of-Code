@@ -3,12 +3,14 @@ module Day3
     )
 where
 
+import           Debug.Trace
+
 import           System.IO
 import           System.Environment
 import           Data.List.Split
 import           Data.List
 import qualified Data.Set                      as Set
-import qualified Data.Map.Lazy                 as Map
+import qualified Data.Map                      as Map
 
 import qualified Data.Text                     as Text
 import qualified Data.Text.IO                  as Text
@@ -21,7 +23,8 @@ solveDay3 = do
     let graphA = execute (splitOn "," (Text.unpack (lines !! 0)))
     let graphB = execute (splitOn "," (Text.unpack (lines !! 1)))
 
-    let final  = distance (coordinates graphA) (coordinates graphB)
+    let final  = shortestPathIntersection graphA graphB
+
     print final
 
 {-| 
@@ -31,15 +34,41 @@ type Coordinate = (Int, Int)
 type GraphCoordinates = Set.Set Coordinate
 type Action = (Int, Int) -> (Int, Int)
 type CommandList = [String]
-type DistancesToStart = Map.Map (Coordinate -> Int)
+type DistancesToStart = Map.Map Coordinate Int
 
 data GraphState = GraphState
     { coordinates :: GraphCoordinates
     , endPoint :: Coordinate
+    , distancesToStart :: DistancesToStart
+    , longestPath :: Int
     }
 
-mkGraphState :: GraphCoordinates -> Coordinate -> GraphState
-mkGraphState coordinates endPoint = GraphState coordinates endPoint
+mkGraphState
+    :: GraphCoordinates -> Coordinate -> DistancesToStart -> Int -> GraphState
+mkGraphState = GraphState
+
+shortestPathIntersection :: GraphState -> GraphState -> Int
+shortestPathIntersection graphA graphB = combineAndReduce
+    crossPointDistancesA
+    crossPointDistancesB
+    []
+  where
+    crossPoints =
+        Set.elems ((coordinates graphA) `Set.intersection` (coordinates graphB))
+    crossPointDistancesA = map
+        (\c -> (\(Just i) -> i) (Map.lookup c (distancesToStart graphA)))
+        crossPoints
+    crossPointDistancesB = map
+        (\c -> (\(Just i) -> i) (Map.lookup c (distancesToStart graphB)))
+        crossPoints
+
+combineAndReduce :: [Int] -> [Int] -> [Int] -> Int
+combineAndReduce list1 list2 result
+    | null list1 = minimum result
+    | otherwise = combineAndReduce (tail list1)
+                                   (tail list2)
+                                   (newElement : result)
+    where newElement = (head list1) + (head list2)
 
 distance :: GraphCoordinates -> GraphCoordinates -> Maybe Int
 distance graphA graphB = Set.lookupMin allDistancees
@@ -48,7 +77,8 @@ distance graphA graphB = Set.lookupMin allDistancees
     crossPoints   = graphA `Set.intersection` graphB
 
 execute :: CommandList -> GraphState
-execute commands = execute' commands (mkGraphState Set.empty (0, 0))
+execute commands =
+    execute' commands (mkGraphState Set.empty (0, 0) Map.empty 0)
 
 execute' :: CommandList -> GraphState -> GraphState
 execute' []       state = state
@@ -75,9 +105,11 @@ expandDown :: Int -> GraphState -> GraphState
 expandDown command state = expand command state (\(x, y) -> (x, y - 1))
 
 expand :: Int -> GraphState -> Action -> GraphState
-expand command (GraphState coordinates endPoint) action
-    | command == 0 = mkGraphState coordinates newPoint
+expand command (GraphState coordinates endPoint distances longest) action
+    | command == 0 = mkGraphState coordinates endPoint distances longest
     | otherwise    = expand (command - 1) newState action
   where
-    newPoint = action endPoint
-    newState = mkGraphState (Set.insert newPoint coordinates) newPoint
+    newPoint       = action endPoint
+    newDistances   = Map.insert newPoint (longest + 1) distances
+    newCoordinates = Set.insert newPoint coordinates
+    newState = mkGraphState newCoordinates newPoint newDistances (longest + 1)
