@@ -45,46 +45,36 @@ checkIncresing []           = True
 checkIncresing [x         ] = True
 checkIncresing (x : y : xs) = x <= y && checkIncresing (y : xs)
 
-{-|
-    Pain... so much pain.
-    (Aka. there is a better solution but I didnt feel motivated).
--}
+
 checkNeighbours :: (Eq a) => [a] -> Int -> Bool
 checkNeighbours input i
-    | i == 0
-    = (input !! i == input !! (i + 1) && input !! (i + 1) /= input !! (i + 2))
-        || checkNeighbours input (i + 1)
-    | i == ((length input) - 3)
-    = (input !! i /= input !! (i + 1) && input !! (i + 1) == input !! (i + 2))
-        || (  input
-           !! (i - 1)
-           /= input
-           !! i
-           && input
-           !! i
-           == input
-           !! (i + 1)
-           && input
-           !! (i + 1)
-           /= input
-           !! (i + 2)
-           )
-    | otherwise
-    = (  input
-      !! (i - 1)
-      /= input
-      !! i
-      && input
-      !! i
-      == input
-      !! (i + 1)
-      && input
-      !! (i + 1)
-      /= input
-      !! (i + 2)
-      )
-        || checkNeighbours input (i + 1)
+    | i == 0 = startMask input i || checkNeighbours input (i + 1)
+    | i == ((length input) - 3) = endMask input i || mask input i
+    | otherwise = mask input i || checkNeighbours input (i + 1)
 
+
+mask :: (Eq a) => [a] -> Int -> Bool
+mask input i =
+    (input !! (i - 1))
+        /= (input !! i)
+        && (input !! i)
+        == (input !! (i + 1))
+        && (input !! (i + 1))
+        /= (input !! (i + 2))
+
+startMask :: (Eq a) => [a] -> Int -> Bool
+startMask input i =
+    (input !! i)
+        == (input !! (i + 1))
+        && (input !! (i + 1))
+        /= (input !! (i + 2))
+
+endMask :: (Eq a) => [a] -> Int -> Bool
+endMask input i =
+    (input !! i)
+        /= (input !! (i + 1))
+        && (input !! (i + 1))
+        == (input !! (i + 2))
 
 
 digits :: Int -> [Int]
