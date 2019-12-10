@@ -3,8 +3,6 @@ module Day3
     )
 where
 
-import           Debug.Trace
-
 import           System.IO
 import           System.Environment
 import           Data.List.Split
