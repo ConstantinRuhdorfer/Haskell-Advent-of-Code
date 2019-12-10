@@ -62,7 +62,7 @@ shortestPathIntersection graphA graphB = combineAndReduce
 
 combineAndReduce :: [Int] -> [Int] -> [Int] -> Int
 combineAndReduce list1 list2 result
-    | null list1 = minimum result
+    | null list1 && null list2 = minimum result
     | otherwise = combineAndReduce (tail list1)
                                    (tail list2)
                                    (newElement : result)
