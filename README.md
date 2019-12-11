@@ -4,6 +4,22 @@ This is a repo for solutions for the advent of code written in haskell.
 
 At the moment this solves the first two puzzles.
 
+The current output of `all` is:
+
+```sh
+$ stack exec adventOfCodeHaskell all
+"Calculating fuel for input file input/day1.txt"
+5084676
+"Executing programm in input/day2.txt with 12 and 2"
+12490719
+"Searching for a noun and a verb that together with the program in input/day2.txt will result in 19690720"
+[20,3]
+"Finding the distance of the intersection with the closest distance to (0,0):"
+5672
+"Finding the ammount of fitting codes between 240920 and 789857:"
+750
+```
+
 ## Usage
 
 A basic project setup looks like this (assumes the haskell-stack toolchain):

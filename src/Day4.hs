@@ -17,8 +17,8 @@ mkSearchState = SearchState
 
 solveDay4 :: IO ()
 solveDay4 = do
-    -- let res = solve 22456 22457
     let res = solve 240920 789857
+    print "Finding the ammount of fitting codes between 240920 and 789857:"
     print res
 
 solve :: Int -> Int -> Int

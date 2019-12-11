@@ -23,6 +23,8 @@ solveDay3 = do
 
     let final  = shortestPathIntersection graphA graphB
 
+    print
+        "Finding the distance of the intersection with the closest distance to (0,0):"
     print final
 
 {-| 
