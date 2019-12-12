@@ -16,10 +16,9 @@ mkSearchState :: Int -> Int -> Int -> Int -> SearchState
 mkSearchState = SearchState
 
 solveDay4 :: IO ()
-solveDay4 = do
-    let res = solve 240920 789857
-    print "Finding the ammount of fitting codes between 240920 and 789857:"
-    print res
+solveDay4 =
+    putStrLn "Finding the ammount of fitting codes between 240920 and 789857:"
+        >> print (solve 240920 789857)
 
 solve :: Int -> Int -> Int
 solve lowerBound upperBound =

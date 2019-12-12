@@ -9,23 +9,21 @@ import           Data.List.Split
 import           Data.List
 import qualified Data.Set                      as Set
 import qualified Data.Map                      as Map
-
 import qualified Data.Text                     as Text
 import qualified Data.Text.IO                  as Text
 
 solveDay3 :: IO ()
-solveDay3 = do
-    let path = "input/day3.txt"
-    lines <- fmap Text.lines (Text.readFile path)
+solveDay3 =
+    print "Executing programm in input/day3.txt"
+        >>  print
+                "Finding the distance of the intersection with the closest distance to (0,0):"
+        >>  fmap Text.lines (Text.readFile "input/day3.txt")
+        >>= \inputList -> print
+                (shortestPathIntersection
+                    (execute $ unpack $ inputList !! 0)
+                    (execute $ unpack $ inputList !! 1)
+                )
 
-    let graphA = execute (splitOn "," (Text.unpack (lines !! 0)))
-    let graphB = execute (splitOn "," (Text.unpack (lines !! 1)))
-
-    let final  = shortestPathIntersection graphA graphB
-
-    print
-        "Finding the distance of the intersection with the closest distance to (0,0):"
-    print final
 
 {-| 
     Solutions
@@ -113,3 +111,7 @@ expand command (GraphState coordinates endPoint distances longest) action
     newDistances   = Map.insert newPoint (longest + 1) distances
     newCoordinates = Set.insert newPoint coordinates
     newState = mkGraphState newCoordinates newPoint newDistances (longest + 1)
+
+
+unpack :: Text.Text -> [String]
+unpack input = splitOn "," $ Text.unpack input

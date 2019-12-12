@@ -5,24 +5,16 @@ where
 
 import           System.IO
 import           System.Environment
+import qualified Data.Text                     as Text
+import qualified Data.Text.IO                  as Text
 
 solveDay1 :: IO ()
-solveDay1 = do
-  let list = []
-  let path = "input/day1.txt"
-  handle   <- openFile path ReadMode
-  contents <- hGetContents handle
-  let singlewords = words contents
-      list        = singlewords
+solveDay1 =
+  print "Calculating fuel for input file input/day1.txt"
+    >>  fmap Text.lines (Text.readFile "input/day1.txt")
+    >>= \inputList -> print $ solve inputList
 
-  let res = solve list
-
-  print ("Calculating fuel for input file " ++ path)
-  print res
-
-  hClose handle
-
-solve :: [String] -> Int
+solve :: [Text.Text] -> Int
 solve = calcFuel . strToInt
 
 calcFuel :: [Int] -> Int
@@ -33,5 +25,5 @@ calcFuel' fuel res | additionalFuel <= 0 = res
                    | otherwise = calcFuel' additionalFuel (res + additionalFuel)
   where additionalFuel = subtract 2 (fuel `quot` 3)
 
-strToInt :: [String] -> [Int]
-strToInt = map read
+strToInt :: [Text.Text] -> [Int]
+strToInt = map (read . Text.unpack)

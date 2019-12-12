@@ -5,38 +5,23 @@ where
 
 import           System.IO
 import           System.Environment
+import qualified Data.Text                     as Text
+import qualified Data.Text.IO                  as Text
 
--- desired was 19690720
+-- desired was 1969072
 solveDay2 :: IO ()
-solveDay2 = do
-    let path = "input/day2.txt"
-    let list = []
-    handle   <- openFile path ReadMode
-    contents <- hGetContents handle
-    let singlewords = words contents
-        list        = singlewords
-
-    let res       = solve list 12 2
-    let resSolver = solver list 19690720 99 99
-
-    print ("Executing programm in " ++ path ++ " with 12 and 2")
-    print res
-
-    print
-        (  "Searching for a noun and a verb that together with the program in "
-        ++ path
-        ++ " will result in 19690720"
-        )
-    print resSolver
-
-    hClose handle
+solveDay2 =
+    print "Executing programm in input/day2.txt with 12 and 2"
+        >>  fmap Text.lines (Text.readFile "input/day2.txt")
+        >>= \inputList -> print (solve inputList 12 2)
+                >> print (solver inputList 19690720 99 99)
 
 
-solve :: [String] -> Int -> Int -> Int
+solve :: [Text.Text] -> Int -> Int -> Int
 solve inputProgram noun verb =
     (firstElem . execute . (initialise noun verb) . strToInt) inputProgram
 
-solver :: [String] -> Int -> Int -> Int -> [Int]
+solver :: [Text.Text] -> Int -> Int -> Int -> [Int]
 solver inputProgram desired noun verb
     | result /= desired && verb /= 0 = solver inputProgram
                                               desired
@@ -88,5 +73,5 @@ replaceNth _ _ [] = []
 replaceNth n newVal (x : xs) | n == 0    = newVal : xs
                              | otherwise = x : replaceNth (n - 1) newVal xs
 
-strToInt :: [String] -> [Int]
-strToInt list = map read list
+strToInt :: [Text.Text] -> [Int]
+strToInt = map (read . Text.unpack)
